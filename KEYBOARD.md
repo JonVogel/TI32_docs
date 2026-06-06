@@ -1,18 +1,14 @@
 # Keyboard reference
 
-This applies to **both** projects (`esp32-s3-box-basic-idf` and
-`ti-extended-basic-esp32`) — the BLE HID layer (`main/ble_keyboard.h`)
-and TI Extended BASIC editor are the same.
-
-Two input paths to the editor:
+Two input paths reach the BASIC editor:
 
 * **BLE keyboard** (any HID keyboard paired via `CALL PAIR` / `F12` /
   the `BOOT` button). The ALT key on a modern PC keyboard plays the
   role of TI's **FCTN** modifier — most BLE keyboards reserve the
   hardware `Fn` key for profile switching, so it never reaches the
   HID layer.
-* **USB serial console**. Anything typed in `idf.py monitor` (or any
-  terminal connected to the CDC port) is interpreted exactly like the
+* **USB serial console**. Anything typed in a terminal connected to
+  the device's USB-UART (115200 baud) is interpreted exactly like the
   BLE keyboard — including the special control codes below.
 
 ---
@@ -75,10 +71,12 @@ overlays:
 
 ## Hardware buttons
 
+(Boards vary; not every button exists on every target.)
+
 | Button | Action |
 |---|---|
-| **BOOT** (front-bottom on Box-3 / Box; front "CONFIG" on V1 Box) | Enter BLE pairing mode (~30 s scan window). Same as `F12` or `CALL PAIR`. |
-| **MUTE** (Box-3) | Toggles ES8311 audio amp (hardware D-flip-flop gate). |
+| **BOOT** | Enter BLE pairing mode (~30 s scan window). Same as `F12` or `CALL PAIR`. |
+| **MUTE** | Toggles the audio codec power gate (on boards that have one). |
 | **RST** | Hardware reset — equivalent to a power cycle. |
 
 ---
@@ -89,9 +87,16 @@ overlays:
 |---|---|
 | `CALL PAIR` | Enter BLE pairing mode for ~30 s. Same effect as `F12` / BOOT. |
 | `CALL UNPAIR` | Forget all bonded BLE peers. |
-| `CALL WIFI("ssid","pass")` | Store WiFi credentials in NVS and try to associate. Persists across reboots. |
-| `CALL WIFI("forget")` *(planned)* | Clear stored WiFi credentials. |
+| `CALL WIFI` | Print one-line status (`ONLINE <ip>` or `OFFLINE`). |
+| `CALL WIFI("ssid","pass")` | Store WiFi credentials in NVS and connect. Persists across reboots. |
+| `CALL WIFI("ssid","pass","name")` | Same plus a friendly hostname (shows in `/api/status` + UDP discovery). |
+| `CALL WIFI("name","my-host")` | Set just the hostname; credentials unchanged. |
+| `CALL WIFI("forget")` | Clear stored credentials (and hostname). |
+| `CALL WIFI("on")` / `CALL WIFI("off")` | Toggle the radio without losing creds. |
 | `BLE` *(serial-only diagnostic)* | Print the bonded-peer table on the serial console. |
+
+See `EXTENSIONS.md` for the full CALL WIFI semantics + what the
+hostname is used for.
 
 ---
 
