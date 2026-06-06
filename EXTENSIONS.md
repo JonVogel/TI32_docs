@@ -181,6 +181,44 @@ readings to time a code block:
 130 PRINT "1000 ITERATIONS:";T1-T0;"MS"
 ```
 
+### CALL WIFI — manage the on-board WiFi radio + HTTP file server
+
+The ESP32-S3 has WiFi the real TI never had. The simulator brings up a
+JSON HTTP file manager (see `ti_files.py` desktop client in
+TI32_web_files) so the device joins your LAN and serves
+`/api/files`, `/api/upload`, etc. on port 80. Credentials live in NVS
+so the radio reconnects automatically every boot.
+
+```
+CALL WIFI                      → print one-line status
+                                 (ONLINE 192.168.1.16 | OFFLINE)
+CALL WIFI("forget")            → clear stored credentials, disconnect
+CALL WIFI("off")               → turn the radio off (creds stay)
+CALL WIFI("on")                → turn the radio on, reconnect
+
+CALL WIFI(ssid$, pass$)        → store creds + connect
+CALL WIFI(ssid$, pass$, name$) → store creds + friendly hostname,
+                                 in one shot
+CALL WIFI("name", name$)       → just set the friendly hostname
+
+CALL PAIR                      → 30-second BLE keyboard pairing scan
+                                 (companion to WiFi for HID input)
+CALL UNPAIR                    → forget all bonded BLE peers
+```
+
+The friendly hostname appears in:
+
+* `/api/status` JSON (`"name":"..."`)
+* The UDP discovery reply (port 8888) the desktop `ti_files.py`
+  client broadcasts and lists in its Discover dialog
+* Future mDNS advertising (planned)
+
+Without a custom name, the device falls back to `TI-XXXX` derived
+from the last two bytes of its WiFi MAC.
+
+Storage: ssid / password / hostname all live in the `tiwifi` NVS
+namespace and survive reboots. `CALL WIFI("forget")` wipes all three.
+
 ## Editor / shell improvements
 
 ### `!` tail comment
