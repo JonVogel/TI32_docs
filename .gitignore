@@ -1,0 +1,5 @@
+# Editor cruft
+.vscode/
+.idea/
+*.swp
+.DS_Store
