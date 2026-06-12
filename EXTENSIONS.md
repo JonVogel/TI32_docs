@@ -246,8 +246,10 @@ prints only `HI`.
 ### Backspace in the editor
 
 PC-style: deletes the character before the cursor and moves the
-cursor left. Works on both the BLE keyboard (HID 0x2A → 0x7F) and
-serial paste (`0x7F`).
+cursor onto its position. Works on both the BLE keyboard (HID
+0x2A → 0x7F) and the USB serial console (`0x7F`). The serial
+monitor receives a `\b \b` mirror sequence so the terminal display
+visibly erases the char too — not just the on-device screen.
 
 FCTN+S for "cursor left without delete" still works — same TI
 semantics as the original.
